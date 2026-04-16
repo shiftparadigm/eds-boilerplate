@@ -14,25 +14,6 @@ import {
 import { decorateAllLinks } from './links.js'
 
 /**
- * Builds hero block and prepends to main in a new section.
- * @param {Element} main The container element
- */
-function buildHeroBlock(main) {
-  const h1 = main.querySelector('h1');
-  const picture = main.querySelector('picture');
-  // eslint-disable-next-line no-bitwise
-  if (h1 && picture && (h1.compareDocumentPosition(picture) & Node.DOCUMENT_POSITION_PRECEDING)) {
-    // Check if h1 or picture is already inside a hero block
-    if (h1.closest('.hero') || picture.closest('.hero')) {
-      return; // Don't create a duplicate hero block
-    }
-    const section = document.createElement('div');
-    section.append(buildBlock('hero', { elems: [picture, h1] }));
-    main.prepend(section);
-  }
-}
-
-/**
  * load fonts.css and set a session storage flag
  */
 async function loadFonts() {
@@ -67,8 +48,6 @@ function buildAutoBlocks(main) {
         });
       });
     }
-
-    buildHeroBlock(main);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Auto Blocking failed', error);
@@ -138,7 +117,6 @@ async function loadEager(doc) {
   if (main) {
     decorateMain(main);
     document.body.classList.add('appear');
-    await loadSection(main.querySelector('.section'), waitForFirstImage);
     decorateAllLinks(main);
   }
 
@@ -158,6 +136,7 @@ async function loadEager(doc) {
  */
 async function loadLazy(doc) {
   loadHeader(doc.querySelector('header'));
+  await loadSection(main.querySelector('.section'), waitForFirstImage);
 
   const main = doc.querySelector('main');
   await loadSections(main);
