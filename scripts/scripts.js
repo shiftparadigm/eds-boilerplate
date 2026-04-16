@@ -11,6 +11,7 @@ import {
   loadSections,
   loadCSS,
 } from './aem.js';
+import { decorateAllLinks } from './links.js'
 
 /**
  * Builds hero block and prepends to main in a new section.
@@ -138,6 +139,7 @@ async function loadEager(doc) {
     decorateMain(main);
     document.body.classList.add('appear');
     await loadSection(main.querySelector('.section'), waitForFirstImage);
+    decorateAllLinks(main);
   }
 
   try {
