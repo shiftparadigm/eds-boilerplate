@@ -12,6 +12,24 @@ import {
   loadCSS,
 } from './aem.js';
 import { decorateAllLinks } from './links.js'
+import { detectVideoType, buildVideoSchema } from '../utils/video-utils.js';
+
+
+// Capture all video URLs immediately at script load time, before any blocks run
+// This ensures we get the original URLs before they're transformed or removed
+const collectedVideoUrls = [];
+(() => {
+  const main = document.querySelector('main');
+  if (main) {
+    const links = main.querySelectorAll('a[href]');
+    links.forEach((link) => {
+      const videoInfo = detectVideoType(link.href);
+      if (videoInfo && (videoInfo.type === 'youtube' || videoInfo.type === 'vimeo' || videoInfo.type === 'mp4')) {
+        collectedVideoUrls.push(link.href);
+      }
+    });
+  }
+})();
 
 /**
  * load fonts.css and set a session storage flag
@@ -115,6 +133,10 @@ async function loadEager(doc) {
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
   if (main) {
+    await (async () => {
+      await buildVideoSchema(collectedVideoUrls, addLinkedDataSchema);
+    })();
+
     decorateMain(main);
     document.body.classList.add('appear');
     decorateAllLinks(main);
