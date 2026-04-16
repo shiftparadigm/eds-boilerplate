@@ -11,9 +11,9 @@ import {
   loadSections,
   loadCSS,
 } from './aem.js';
+import addLinkedDataSchema from '../utils/json-schema-utils.js';
 import { decorateAllLinks } from './links.js'
 import { detectVideoType, buildVideoSchema } from '../utils/video-utils.js';
-
 
 // Capture all video URLs immediately at script load time, before any blocks run
 // This ensures we get the original URLs before they're transformed or removed
@@ -158,9 +158,9 @@ async function loadEager(doc) {
  */
 async function loadLazy(doc) {
   loadHeader(doc.querySelector('header'));
-  await loadSection(main.querySelector('.section'), waitForFirstImage);
 
-  const main = doc.querySelector('main');
+  const main = doc.querySelector("main");
+  await loadSection(main.querySelector(".section"), waitForFirstImage);
   await loadSections(main);
 
   const { hash } = window.location;
